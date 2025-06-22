@@ -1,0 +1,22 @@
+# Optimized requirements for Railway deployment
+# Core FastAPI dependencies
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+
+# HTTP client and web scraping
+httpx==0.25.2
+beautifulsoup4==4.12.2
+lxml==4.9.3
+python-multipart==0.0.6
+
+# Optional: Remove if not using AI features
+# anthropic==0.54.0
+# python-dotenv==1.0.0
+
+# Note: Removed desktop automation packages for web deployment:
+# - pyautogui (GUI automation)
+# - pywinauto (Windows automation)
+# - opencv-python (computer vision)
+# - numpy (if only used for desktop automation)
+# - psutil (system monitoring)
+# - Pillow (image processing, unless needed for web features)
