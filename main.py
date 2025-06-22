@@ -39,6 +39,7 @@ SEARCH_ENGINES = {
     
     # Social & Entertainment
     "x": "https://x.com/search?q={}",
+    "yt": "https://www.youtube.com/results?search_query={}",
     
     # Education
     "ud": "https://www.udemy.com/courses/search/?q={}&price=price-free",
@@ -48,7 +49,7 @@ SEARCH_ENGINES = {
 ENGINE_CATEGORIES = {
     "AI Search": ["andi", "brave", "ds", "felo", "gg", "komo", "p", "ph", "you"],
     "Development": ["gh", "pht", "tf", "gw", "mb", "v0", "sp"],
-    "Social & Entertainment": ["x"],
+    "Social & Entertainment": ["x", "yt"],
     "Education": ["ud"]
 }
 
@@ -421,11 +422,12 @@ async def root():
             
             <div class="search-container">
                 <div class="search-box">
-                    <input type="text" class="search-input" placeholder="Search across 25+ engines instantly..." id="searchInput">
+                    <input type="text" class="search-input" placeholder="Search across 26+ engines instantly..." id="searchInput">
                     <div class="search-actions">
                         <button class="search-btn" onclick="searchAll()">🚀 Search All Engines</button>
                         <button class="search-btn secondary" onclick="searchGitHub()">🐙 GitHub</button>
                         <button class="search-btn secondary" onclick="searchGoogle()">🔍 Google</button>
+                        <button class="search-btn secondary" onclick="searchYouTube()">📺 YouTube</button>
                         <button class="search-btn secondary" onclick="searchAI()">🤖 AI Search</button>
                     </div>
                 </div>
@@ -435,7 +437,7 @@ async def root():
                 <div class="feature-card">
                     <div class="feature-icon">⚡</div>
                     <div class="feature-title">Lightning Fast</div>
-                    <div class="feature-desc">Search across 25+ engines simultaneously with optimized performance</div>
+                    <div class="feature-desc">Search across 26+ engines simultaneously with optimized performance</div>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">🎯</div>
@@ -490,7 +492,7 @@ async def root():
             function searchAll() {
                 const query = getSearchQuery();
                 if (query) {
-                    window.open(`/browser-search?q=${query}&engine=all`, '_blank');
+                    window.open(`/unified-search?q=${query}`, '_blank');
                 }
             }
             
@@ -505,6 +507,13 @@ async def root():
                 const query = getSearchQuery();
                 if (query) {
                     window.open(`/browser-search?q=${query}&engine=gg&redirect=true`, '_blank');
+                }
+            }
+            
+            function searchYouTube() {
+                const query = getSearchQuery();
+                if (query) {
+                    window.open(`/browser-search?q=${query}&engine=yt&redirect=true`, '_blank');
                 }
             }
             
@@ -622,6 +631,282 @@ async def list_engines():
         "categories": ENGINE_CATEGORIES,
         "total_engines": len(SEARCH_ENGINES)
     }
+
+@app.get("/unified-search")
+async def unified_search(
+    q: str = Query(..., description="Search query for unified results page")
+):
+    """Unified search results page displaying all engines in one place"""
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>GitGod.ai - Unified Search Results for "{q}"</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            * {{
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }}
+            
+            body {{
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+                background: #0d1117;
+                color: #e6edf3;
+                min-height: 100vh;
+                padding: 2rem;
+                line-height: 1.6;
+            }}
+            
+            .header {{
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 2rem;
+                padding-bottom: 1rem;
+                border-bottom: 1px solid #30363d;
+            }}
+            
+            .logo {{
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                font-size: 1.5rem;
+                font-weight: 600;
+                color: #58a6ff;
+            }}
+            
+            .logo-icon {{
+                width: 32px;
+                height: 32px;
+                background: linear-gradient(135deg, #58a6ff, #7c3aed);
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.2rem;
+            }}
+            
+            .back-btn {{
+                background: #21262d;
+                color: #e6edf3;
+                border: 1px solid #30363d;
+                padding: 0.5rem 1rem;
+                border-radius: 6px;
+                text-decoration: none;
+                font-size: 0.9rem;
+                transition: all 0.2s ease;
+            }}
+            
+            .back-btn:hover {{
+                background: #30363d;
+                border-color: #58a6ff;
+            }}
+            
+            .container {{
+                max-width: 1200px;
+                margin: 0 auto;
+            }}
+            
+            .search-header {{
+                text-align: center;
+                margin-bottom: 2rem;
+            }}
+            
+            .search-title {{
+                font-size: 2.5rem;
+                font-weight: 700;
+                background: linear-gradient(135deg, #58a6ff, #7c3aed, #f78166);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                margin-bottom: 0.5rem;
+            }}
+            
+            .search-query {{
+                font-size: 1.2rem;
+                color: #8b949e;
+                margin-bottom: 1.5rem;
+            }}
+            
+            .category {{
+                margin: 3rem 0;
+            }}
+            
+            .category-title {{
+                font-size: 1.5rem;
+                font-weight: 600;
+                color: #58a6ff;
+                margin-bottom: 1.5rem;
+                padding-bottom: 0.5rem;
+                border-bottom: 2px solid #30363d;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }}
+            
+            .search-grid {{
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+                gap: 1.5rem;
+            }}
+            
+            .search-card {{
+                background: #161b22;
+                border: 1px solid #30363d;
+                border-radius: 12px;
+                padding: 1.5rem;
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;
+            }}
+            
+            .search-card::before {{
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: linear-gradient(90deg, #58a6ff, #7c3aed);
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }}
+            
+            .search-card:hover {{
+                border-color: #58a6ff;
+                transform: translateY(-4px);
+                box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+            }}
+            
+            .search-card:hover::before {{
+                opacity: 1;
+            }}
+            
+            .engine-header {{
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 1rem;
+            }}
+            
+            .engine-name {{
+                font-weight: 600;
+                color: #e6edf3;
+                font-size: 1.1rem;
+            }}
+            
+            .engine-icon {{
+                font-size: 1.5rem;
+            }}
+            
+            .search-link {{
+                display: inline-block;
+                background: #238636;
+                color: white;
+                text-decoration: none;
+                padding: 0.75rem 1.5rem;
+                border-radius: 8px;
+                font-weight: 500;
+                transition: all 0.2s ease;
+                width: 100%;
+                text-align: center;
+            }}
+            
+            .search-link:hover {{
+                background: #2ea043;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(46, 160, 67, 0.3);
+            }}
+            
+            .category-icons {{
+                'AI Search': '🤖',
+                'Development': '💻',
+                'Social & Entertainment': '🎭',
+                'Education': '📚'
+            }}
+            
+            @media (max-width: 768px) {{
+                body {{
+                    padding: 1rem;
+                }}
+                
+                .search-title {{
+                    font-size: 2rem;
+                }}
+                
+                .search-grid {{
+                    grid-template-columns: 1fr;
+                }}
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">🚀</div>
+                <span>GitGod.ai</span>
+            </div>
+            <a href="/" class="back-btn">← Back to Home</a>
+        </div>
+        
+        <div class="container">
+            <div class="search-header">
+                <h1 class="search-title">Unified Search Results</h1>
+                <div class="search-query">Query: "{q}"</div>
+            </div>
+    """
+    
+    # Category icons mapping
+    category_icons = {
+        "AI Search": "🤖",
+        "Development": "💻", 
+        "Social & Entertainment": "🎭",
+        "Education": "📚"
+    }
+    
+    # Group by categories
+    for category, engines in ENGINE_CATEGORIES.items():
+        icon = category_icons.get(category, "🔍")
+        html_content += f'<div class="category"><div class="category-title">{icon} {category}</div><div class="search-grid">'
+        
+        for engine in engines:
+            if engine in SEARCH_ENGINES:
+                search_url = SEARCH_ENGINES[engine].format(quote_plus(q))
+                engine_name = get_engine_name(engine)
+                
+                # Engine-specific icons
+                engine_icons = {
+                    "gg": "🔍", "gh": "🐙", "yt": "📺", "x": "🐦",
+                    "p": "🔮", "you": "💭", "andi": "🤖", "felo": "🧠",
+                    "brave": "🦁", "ds": "🔬", "komo": "🌟", "ph": "💡",
+                    "pht": "🚀", "tf": "🎨", "gw": "✨", "mb": "📱",
+                    "v0": "⚡", "sp": "🎭", "ud": "🎓"
+                }
+                
+                engine_icon = engine_icons.get(engine, "🔗")
+                
+                html_content += f"""
+                <div class="search-card">
+                    <div class="engine-header">
+                        <div class="engine-name">{engine_name}</div>
+                        <div class="engine-icon">{engine_icon}</div>
+                    </div>
+                    <a href="{search_url}" target="_blank" class="search-link">Search on {engine_name}</a>
+                </div>
+                """
+        
+        html_content += '</div></div>'
+    
+    html_content += """
+        </div>
+    </body>
+    </html>
+    """
+    
+    return HTMLResponse(content=html_content)
 
 @app.get("/browser-search")
 async def browser_search(
@@ -910,6 +1195,7 @@ def get_engine_name(engine_key: str) -> str:
         "sp": "Spline Community",
 
         "x": "X.com (Twitter)",
+        "yt": "YouTube",
         "ud": "Free Udemy"
     }
     return engine_names.get(engine_key, engine_key.upper())
