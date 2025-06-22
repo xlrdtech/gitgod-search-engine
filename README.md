@@ -65,7 +65,7 @@ uvicorn main:app --reload
 ### Social & Entertainment
 | Shortcut | Platform | Description |
 |----------|----------|--------------|
-| `tpb` | The Pirate Bay | Torrent search |
+
 | `x` | X.com (Twitter) | Social media search |
 
 ### Education

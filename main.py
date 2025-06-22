@@ -38,7 +38,6 @@ SEARCH_ENGINES = {
     "sp": "https://community.spline.design/search?q={}",
     
     # Social & Entertainment
-    "tpb": "https://thepiratebay.org/search/{}",
     "x": "https://x.com/search?q={}",
     
     # Education
@@ -49,7 +48,7 @@ SEARCH_ENGINES = {
 ENGINE_CATEGORIES = {
     "AI Search": ["andi", "brave", "ds", "felo", "gg", "komo", "p", "ph", "you"],
     "Development": ["gh", "pht", "tf", "gw", "mb", "v0", "sp"],
-    "Social & Entertainment": ["tpb", "x"],
+    "Social & Entertainment": ["x"],
     "Education": ["ud"]
 }
 
@@ -909,7 +908,7 @@ def get_engine_name(engine_key: str) -> str:
         "mb": "Mobbin",
         "v0": "v0.dev",
         "sp": "Spline Community",
-        "tpb": "The Pirate Bay",
+
         "x": "X.com (Twitter)",
         "ud": "Free Udemy"
     }
